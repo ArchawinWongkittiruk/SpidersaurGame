@@ -1,5 +1,4 @@
 #include <SFML/Graphics.hpp>
-#include <iostream>
 
 using namespace sf;
 
@@ -57,16 +56,18 @@ int main() {
     score.setCharacterSize(50);
     score.setPosition(50, 50);
 
-    Texture dinoTexture1; dinoTexture1.loadFromFile("images/dinosprite1.png");
-    Texture dinoTexture2; dinoTexture2.loadFromFile("images/dinosprite2.png");
-    Texture dinoTexture3; dinoTexture3.loadFromFile("images/dinosprite3.png");
+    Texture dinoTextures[4];
+    Texture dinoTexture0; dinoTexture0.loadFromFile("images/dinosprite1.png"); dinoTextures[0] = dinoTexture0;
+    Texture dinoTexture1; dinoTexture1.loadFromFile("images/dinosprite3.png"); dinoTextures[1] = dinoTexture1;
+    Texture dinoTexture2; dinoTexture2.loadFromFile("images/dinosprite2.png"); dinoTextures[2] = dinoTexture2;
+    Texture dinoTexture3; dinoTexture3.loadFromFile("images/dinosprite3.png"); dinoTextures[3] = dinoTexture3;
     Texture groundTexture; groundTexture.loadFromFile("images/ground.png");
     Texture skyTexture; skyTexture.loadFromFile("images/sky.jpg");
     Texture cactusTexture; cactusTexture.loadFromFile("images/cactus.png");
     Texture brickTexture; brickTexture.loadFromFile("images/brick.png");
 
-    dinoSprite.setTexture(dinoTexture1);
-    int runTexture = 1;
+    dinoSprite.setTexture(dinoTexture0);
+    int dinoTextureIndex = 0;
     groundSprite.setTexture(groundTexture);
     skySprite1.setTexture(skyTexture);
     skySprite2.setTexture(skyTexture);
@@ -108,6 +109,7 @@ int main() {
             if (Keyboard::isKeyPressed(Keyboard::Space)) {
                 if (y > windowHeight - 200) {
                     dy = -12;
+                    dinoSprite.setTexture(dinoTexture0);
                 }
                 if (dy > 0) {
                     dy -= 0.3;
@@ -177,30 +179,9 @@ int main() {
             }
 
             // 'animate' running
-            bool onQuarterCycle = ((int)clock.getElapsedTime().asMilliseconds() / 10) % 8 == 0;
-            bool onHalfCycle = ((int)clock.getElapsedTime().asMilliseconds() / 10) % 16 == 0;
-            bool onFullCycle = ((int)clock.getElapsedTime().asMilliseconds() / 10) % 32 == 0;
-            if (y > windowHeight - 200) {
-                if (onHalfCycle && !onFullCycle) {
-                    dinoSprite.setTexture(dinoTexture1);
-                    runTexture = 1;
-                }
-                else if (onFullCycle) {
-                    dinoSprite.setTexture(dinoTexture2);
-                    runTexture = 2;
-                }
-                else if (onQuarterCycle && runTexture == 1) {
-                    dinoSprite.setTexture(dinoTexture3);
-                    runTexture = 3;
-                }
-                else if (onQuarterCycle && runTexture == 2) {
-                    dinoSprite.setTexture(dinoTexture3);
-                    runTexture = 3;
-                }
-            }
-            else {
-                dinoSprite.setTexture(dinoTexture1);
-                runTexture = 1;
+            if (((int)clock.getElapsedTime().asMilliseconds() / 10) % 8 == 0 && y > windowHeight - 200) {
+                dinoTextureIndex = (dinoTextureIndex + 1) % 4;
+                dinoSprite.setTexture(dinoTextures[dinoTextureIndex]);
             }
         }
         else if (Keyboard::isKeyPressed(Keyboard::Space)) {
